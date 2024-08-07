@@ -9,7 +9,7 @@ import requests
 import yaml
 from tqdm import tqdm
 
-from mem0 import Mem0
+from mem0 import Memory
 from embedchain.cache import (
     Config,
     ExactMatchEvaluation,
@@ -20,7 +20,7 @@ from embedchain.cache import (
 )
 from embedchain.client import Client
 from embedchain.config import AppConfig, CacheConfig, ChunkerConfig, Mem0Config
-from embedchain.core.db.database import get_session, init_db, setup_engine
+from embedchain.core.db.database import get_session
 from embedchain.core.db.models import DataSource
 from embedchain.embedchain import EmbedChain
 from embedchain.embedder.base import BaseEmbedder
@@ -89,10 +89,6 @@ class App(EmbedChain):
         if name and config:
             raise Exception("Cannot provide both name and config. Please provide only one of them.")
 
-        # Initialize the metadata db for the app
-        setup_engine(database_uri=os.environ.get("EMBEDCHAIN_DB_URI"))
-        init_db()
-
         self.auto_deploy = auto_deploy
         # Store the dict config as an attribute to be able to send it
         self.config_data = config_data if (config_data and validate_config(config_data)) else None
@@ -131,9 +127,9 @@ class App(EmbedChain):
             self._init_cache()
 
         # If memory_config is provided, initializing the memory ...
-        self.mem0_client = None
+        self.mem0_memory = None
         if self.memory_config is not None:
-            self.mem0_client = Mem0(api_key=self.memory_config.api_key)
+            self.mem0_memory = Memory()
 
         # Send anonymous telemetry
         self._telemetry_props = {"class": self.__class__.__name__}
@@ -389,10 +385,6 @@ class App(EmbedChain):
         vector_db = VectorDBFactory.create(vector_db_provider, vector_db_config_data.get("config", {}))
 
         if llm_config_data:
-            # Initialize the metadata db for the app here since llmfactory needs it for initialization of
-            # the llm memory
-            setup_engine(database_uri=os.environ.get("EMBEDCHAIN_DB_URI"))
-            init_db()
             llm_provider = llm_config_data.get("provider", "openai")
             llm = LlmFactory.create(llm_provider, llm_config_data.get("config", {}))
         else:

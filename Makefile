@@ -1,11 +1,18 @@
 .PHONY: format sort lint
 
 # Variables
-RUFF_OPTIONS = --line-length 120
 ISORT_OPTIONS = --profile black
+PROJECT_NAME := mem0ai
 
 # Default target
 all: format sort lint
+
+install:
+	poetry install
+
+install_all:
+	poetry install
+	poetry run pip install groq together boto3 litellm ollama
 
 # Format code with ruff
 format:
@@ -17,7 +24,7 @@ sort:
 
 # Lint code with ruff
 lint:
-	poetry run ruff check . $(RUFF_OPTIONS)
+	poetry run ruff .
 
 docs:
 	cd docs && mintlify dev
@@ -30,3 +37,6 @@ publish:
 
 clean:
 	poetry run rm -rf dist
+
+test:
+	poetry run pytest tests
