@@ -2,6 +2,11 @@
 __pycache__/
 *.py[cod]
 *$py.class
+**/node_modules/
+
+# Self-hosted server local runtime state
+server/history/
+server/.env
 
 # C extensions
 *.so
@@ -9,13 +14,17 @@ __pycache__/
 # Distribution / packaging
 .Python
 build/
+!integrations/agent-plugin-core/build/
+!integrations/agent-plugin-core/build/*.py
+!integrations/agent-plugin-core/build/schemas/
+!integrations/agent-plugin-core/build/schemas/*.json
 develop-eggs/
 dist/
 downloads/
 eggs/
 .eggs/
-lib/
-lib64/
+/lib/
+/lib64/
 parts/
 sdist/
 var/
@@ -103,7 +112,7 @@ ipython_config.py
 # pdm
 #   Similar to Pipfile.lock, it is generally recommended to include pdm.lock in version control.
 #pdm.lock
-#   pdm stores project-wide configurations in .pdm.toml, but it is recommended to not include it
+#   pdm stores project-wide configurations in .pdm.toml, but it is recommended not to include it
 #   in version control.
 #   https://pdm.fming.dev/#use-with-ide
 .pdm.toml
@@ -165,7 +174,6 @@ cython_debug/
 # Database
 db
 test-db
-!embedchain/core/db/
 
 .vscode
 .idea/
@@ -183,3 +191,11 @@ notebooks/*.yaml
 # local directories for testing
 eval/
 qdrant_storage/
+.crossnote
+testing.ipynb
+.weave/
+
+
+# TypeScript incremental build info and local, uncommitted e2e scripts (used by the integrations, e.g. integrations/deepseek-plugin)
+*.tsbuildinfo
+*.local.mjs
